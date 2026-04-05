@@ -9,6 +9,43 @@ from PIL import Image
 from fpdf import FPDF
 import json
 import tempfile
+import os
+import gdown   # ✅ added
+
+# ----------- MODEL LOAD (WITH GOOGLE DRIVE - FIXED) -----------
+MODEL_PATH = "plant_disease_model.h5"
+
+FILE_ID = "1MKW4o4Ux-8uMcO7QukDPwwa2GgLW01dq"
+url = f"https://drive.google.com/uc?id={FILE_ID}"
+
+if not os.path.exists(MODEL_PATH):
+    st.warning("⬇️ Downloading model from Google Drive...")
+
+    try:
+        gdown.download(url, MODEL_PATH, quiet=False)
+
+        # ✅ check if file is valid (not html)
+        if os.path.getsize(MODEL_PATH) < 1000000:
+            st.error("❌ Downloaded file is corrupted!")
+            os.remove(MODEL_PATH)
+            st.stop()
+
+        st.success("✅ Model downloaded successfully!")
+
+    except Exception as e:
+        st.error("❌ Auto-download failed!")
+        st.write(e)
+        st.stop()
+
+# ----------- LOAD MODEL SAFELY -----------
+try:
+    model = load_model(MODEL_PATH)
+except Exception as e:
+    st.error("❌ Model loading failed (file corrupted)")
+    st.write(e)
+    st.stop()
+
+IMG_SIZE = 224
 
 # ----------- HIDE SIDEBAR -----------
 st.markdown("""
@@ -16,10 +53,6 @@ st.markdown("""
 [data-testid="stSidebar"] {display: none;}
 </style>
 """, unsafe_allow_html=True)
-
-# ----------- MODEL -----------
-model = load_model("plant_disease_model.h5")
-IMG_SIZE = 224
 
 # ----------- CLASS NAMES -----------
 with open("class_indices.json", "r") as f:

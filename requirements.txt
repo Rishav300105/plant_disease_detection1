@@ -5,3 +5,5 @@ opencv-python
 pillow
 fpdf
 scikit-learn
+streamlit_webrtc
+gdown

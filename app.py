@@ -221,7 +221,10 @@ def generate_pdf(image, label, confidence, treatment, prevention):
 
     clean_label = label.encode("latin-1", "ignore").decode("latin-1")
 
-    pdf.cell(200, 10, f"Disease: {clean_label}", ln=True)
+    if "healthy" in clean_label.lower():
+     pdf.cell(200, 10, "Status: Healthy Plant", ln=True)
+    else:
+     pdf.cell(200, 10, f"Disease: {clean_label}", ln=True)
     pdf.cell(200, 10, f"Confidence: {confidence:.2f}%", ln=True)
 
     pdf.ln(5)
@@ -245,7 +248,10 @@ if option == "Upload Image":
 
         label, confidence, info = predict_image(image)
 
-        st.success(f"🌿 Disease: {label}")
+        if "healthy" in label.lower():
+          st.success("🌿 Healthy Plant ")
+        else:
+          st.success(f"🌿 Disease: {label}")
         st.info(f"📊 Confidence: {confidence:.2f}%")
 
         st.subheader("💊 Treatment")

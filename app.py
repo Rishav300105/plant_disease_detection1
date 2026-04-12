@@ -11,6 +11,7 @@ import json
 import tempfile
 import gdown
 import os
+import streamlit.components.v1 as components
 
 # ----------- CUSTOM CSS -----------
 st.markdown("""
@@ -696,210 +697,323 @@ def render_result(image, label, confidence, info):
 
 
 # ----------- ANIMATED BACKGROUND -----------
+# Static CSS layers via markdown (no JS needed)
 st.markdown("""
-<div id="animBG" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;">
+<div id="staticBG" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;">
 
-  <!-- ████  LAYER 1 : DEEP BASE GRADIENT AURORA  ████ -->
   <div style="position:absolute;inset:0;
-    background: radial-gradient(ellipse 80% 60% at 15% 10%,  rgba(30,110,50,0.28) 0%, transparent 65%),
-                radial-gradient(ellipse 70% 55% at 85% 20%,  rgba(10,70,25,0.22)  0%, transparent 60%),
-                radial-gradient(ellipse 90% 50% at 50% 100%, rgba(20,90,35,0.18)  0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 5%  80%,  rgba(58,158,69,0.10) 0%, transparent 55%);
-    animation: auroraPulse 12s ease-in-out infinite;">
+    background:radial-gradient(ellipse 80% 60% at 15% 10%,rgba(30,110,50,0.28) 0%,transparent 65%),
+               radial-gradient(ellipse 70% 55% at 85% 20%,rgba(10,70,25,0.22) 0%,transparent 60%),
+               radial-gradient(ellipse 90% 50% at 50% 100%,rgba(20,90,35,0.18) 0%,transparent 60%);
+    animation:auroraPulse 12s ease-in-out infinite;">
   </div>
-
-  <!-- ████  LAYER 2 : AURORA SWEEP BANDS  ████ -->
   <div style="position:absolute;top:-40%;left:-20%;width:140%;height:80%;
-    background: linear-gradient(165deg,
-      transparent 0%,
-      rgba(58,158,69,0.06) 30%,
-      rgba(95,208,104,0.10) 45%,
-      rgba(30,120,50,0.07) 55%,
-      transparent 70%);
-    filter:blur(30px);
-    animation:auroraSwipe 18s ease-in-out infinite;
-    transform-origin: center center;">
-  </div>
-  <div style="position:absolute;top:30%;left:-30%;width:160%;height:60%;
-    background: linear-gradient(145deg,
-      transparent 0%,
-      rgba(20,90,35,0.08) 35%,
-      rgba(75,180,85,0.07) 50%,
-      transparent 65%);
-    filter:blur(40px);
-    animation:auroraSwipe 24s ease-in-out infinite 6s reverse;
-    transform-origin: center center;">
-  </div>
+    background:linear-gradient(165deg,transparent 0%,rgba(58,158,69,0.07) 35%,rgba(95,208,104,0.11) 48%,transparent 72%);
+    filter:blur(32px);animation:auroraSwipe 20s ease-in-out infinite;"></div>
 
-  <!-- ████  LAYER 3 : 6 LARGE DRIFTING ORBs  ████ -->
-  <div style="position:absolute;width:640px;height:640px;border-radius:50%;
-    background:radial-gradient(circle,rgba(58,158,69,0.22),transparent 62%);
-    filter:blur(90px);top:-250px;left:-220px;
-    animation:glowPulse 6s ease-in-out infinite, driftA 22s ease-in-out infinite;"></div>
-  <div style="position:absolute;width:500px;height:500px;border-radius:50%;
-    background:radial-gradient(circle,rgba(20,100,38,0.20),transparent 62%);
-    filter:blur(80px);top:28%;right:-180px;
-    animation:glowPulse 8s ease-in-out infinite 2s, driftB 26s ease-in-out infinite 5s;"></div>
-  <div style="position:absolute;width:420px;height:420px;border-radius:50%;
-    background:radial-gradient(circle,rgba(95,208,104,0.16),transparent 62%);
-    filter:blur(75px);bottom:-150px;left:25%;
-    animation:glowPulse 7s ease-in-out infinite 4s, driftC 20s ease-in-out infinite 8s;"></div>
-  <div style="position:absolute;width:320px;height:320px;border-radius:50%;
-    background:radial-gradient(circle,rgba(30,145,58,0.18),transparent 62%);
-    filter:blur(70px);top:52%;left:3%;
-    animation:glowPulse 9s ease-in-out infinite 1s, driftD 28s ease-in-out infinite 3s;"></div>
-  <div style="position:absolute;width:280px;height:280px;border-radius:50%;
-    background:radial-gradient(circle,rgba(70,185,82,0.13),transparent 62%);
-    filter:blur(65px);top:12%;left:42%;
-    animation:glowPulse 5s ease-in-out infinite 3s, driftA 18s ease-in-out infinite reverse;"></div>
-  <div style="position:absolute;width:360px;height:360px;border-radius:50%;
-    background:radial-gradient(circle,rgba(10,80,28,0.20),transparent 62%);
-    filter:blur(75px);bottom:8%;right:3%;
-    animation:glowPulse 10s ease-in-out infinite 6s, driftC 24s ease-in-out infinite 10s;"></div>
+  <div style="position:absolute;width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,rgba(58,158,69,0.22),transparent 62%);filter:blur(90px);top:-250px;left:-220px;animation:glowPulse 6s ease-in-out infinite,driftA 22s ease-in-out infinite;"></div>
+  <div style="position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(20,100,38,0.20),transparent 62%);filter:blur(80px);top:28%;right:-180px;animation:glowPulse 8s ease-in-out infinite 2s,driftB 26s ease-in-out infinite 5s;"></div>
+  <div style="position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(95,208,104,0.16),transparent 62%);filter:blur(75px);bottom:-150px;left:25%;animation:glowPulse 7s ease-in-out infinite 4s,driftC 20s ease-in-out infinite 8s;"></div>
+  <div style="position:absolute;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(30,145,58,0.18),transparent 62%);filter:blur(70px);top:52%;left:3%;animation:glowPulse 9s ease-in-out infinite 1s,driftD 28s ease-in-out infinite 3s;"></div>
+  <div style="position:absolute;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(70,185,82,0.13),transparent 62%);filter:blur(65px);top:12%;left:42%;animation:glowPulse 5s ease-in-out infinite 3s,driftA 18s ease-in-out infinite reverse;"></div>
 
-  <!-- ████  LAYER 4 : HEXAGONAL GRID  ████ -->
   <svg style="position:absolute;inset:0;width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <pattern id="hexgrid" x="0" y="0" width="56" height="64" patternUnits="userSpaceOnUse">
-        <polygon points="28,2 52,16 52,48 28,62 4,48 4,16"
-          fill="none" stroke="rgba(95,208,104,0.055)" stroke-width="0.8"/>
-      </pattern>
-      <animate attributeName="opacity" values="0.5;1;0.5" dur="8s" repeatCount="indefinite"/>
-    </defs>
+    <defs><pattern id="hexgrid" x="0" y="0" width="56" height="64" patternUnits="userSpaceOnUse">
+      <polygon points="28,2 52,16 52,48 28,62 4,48 4,16" fill="none" stroke="rgba(95,208,104,0.055)" stroke-width="0.8"/>
+    </pattern></defs>
     <rect width="100%" height="100%" fill="url(#hexgrid)" style="animation:gridShimmer 8s ease-in-out infinite;"/>
   </svg>
 
-  <!-- ████  LAYER 5 : DOT GRID  ████ -->
-  <svg style="position:absolute;inset:0;width:100%;height:100%;animation:gridShimmer 6s ease-in-out infinite 3s;" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <pattern id="dotgrid" x="0" y="0" width="44" height="44" patternUnits="userSpaceOnUse">
-        <circle cx="22" cy="22" r="1" fill="rgba(95,208,104,0.28)"/>
-      </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill="url(#dotgrid)"/>
-  </svg>
+  <div style="position:absolute;width:4px;height:4px;border-radius:50%;background:#5fd068;top:8%;left:18%;animation:twinkle 2.8s ease-in-out infinite;"></div>
+  <div style="position:absolute;width:3px;height:3px;border-radius:50%;background:#5fd068;top:18%;left:74%;animation:twinkle 4.2s ease-in-out infinite 1s;"></div>
+  <div style="position:absolute;width:5px;height:5px;border-radius:50%;background:#3a9e45;top:30%;left:91%;animation:twinkle 3.5s ease-in-out infinite 0.5s;"></div>
+  <div style="position:absolute;width:4px;height:4px;border-radius:50%;background:#3a9e45;top:60%;left:52%;animation:twinkle 5.0s ease-in-out infinite 1.5s;"></div>
+  <div style="position:absolute;width:3px;height:3px;border-radius:50%;background:#5fd068;top:82%;left:80%;animation:twinkle 2.5s ease-in-out infinite 4s;"></div>
 
-  <!-- ████  LAYER 6 : DIAGONAL CROSS LINES  ████ -->
-  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.035;" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <pattern id="crosshatch" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
-        <line x1="0" y1="0" x2="50" y2="50" stroke="rgba(95,208,104,1)" stroke-width="0.4"/>
-        <line x1="50" y1="0" x2="0" y2="50" stroke="rgba(95,208,104,1)" stroke-width="0.4"/>
-      </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill="url(#crosshatch)"/>
-  </svg>
+  <div style="position:absolute;width:180px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(95,208,104,0.85),transparent);top:12%;left:0;animation:shoot 7s linear infinite;"></div>
+  <div style="position:absolute;width:110px;height:1px;background:linear-gradient(90deg,transparent,rgba(95,208,104,0.65),transparent);top:55%;left:0;animation:shoot 11s linear infinite 3s;"></div>
+  <div style="position:absolute;width:220px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(58,158,69,0.75),transparent);top:78%;left:0;animation:shoot 9s linear infinite 6s;"></div>
 
-  <!-- ████  LAYER 7 : BOTANICAL CORNER SVG LEAVES  ████ -->
-  <svg style="position:absolute;inset:0;width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">
-    <g style="animation:botanicalSway 9s ease-in-out infinite;" transform-origin="60px 220px">
-      <ellipse cx="60" cy="200" rx="45" ry="130" fill="rgba(58,158,69,0.06)" stroke="rgba(95,208,104,0.09)" stroke-width="1" transform="rotate(-28,60,200)"/>
-      <line x1="60" y1="90" x2="60" y2="300" stroke="rgba(95,208,104,0.07)" stroke-width="1.2"/>
-      <line x1="60" y1="130" x2="28" y2="155" stroke="rgba(95,208,104,0.05)" stroke-width="0.8"/>
-      <line x1="60" y1="160" x2="22" y2="185" stroke="rgba(95,208,104,0.05)" stroke-width="0.8"/>
-      <line x1="60" y1="190" x2="25" y2="212" stroke="rgba(95,208,104,0.04)" stroke-width="0.8"/>
-      <line x1="60" y1="130" x2="92" y2="155" stroke="rgba(95,208,104,0.05)" stroke-width="0.8"/>
-      <line x1="60" y1="160" x2="98" y2="185" stroke="rgba(95,208,104,0.05)" stroke-width="0.8"/>
+  <div style="position:absolute;width:200px;height:200px;border-radius:50%;border:1px solid rgba(95,208,104,0.15);top:20%;left:5%;animation:ripple 5s ease-out infinite;"></div>
+  <div style="position:absolute;width:200px;height:200px;border-radius:50%;border:1px solid rgba(95,208,104,0.09);top:20%;left:5%;animation:ripple 5s ease-out infinite 1.7s;"></div>
+  <div style="position:absolute;width:160px;height:160px;border-radius:50%;border:1px solid rgba(95,208,104,0.12);top:58%;right:6%;animation:ripple 7s ease-out infinite 1s;"></div>
+  <div style="position:absolute;width:160px;height:160px;border-radius:50%;border:1px solid rgba(95,208,104,0.07);top:58%;right:6%;animation:ripple 7s ease-out infinite 3.5s;"></div>
+
+  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.06;" xmlns="http://www.w3.org/2000/svg">
+    <g style="animation:botanicalSway 9s ease-in-out infinite;transform-origin:60px 220px;">
+      <ellipse cx="60" cy="200" rx="45" ry="130" fill="rgba(58,158,69,0.5)" stroke="rgba(95,208,104,0.8)" stroke-width="1" transform="rotate(-28,60,200)"/>
+      <line x1="60" y1="90" x2="60" y2="300" stroke="rgba(95,208,104,0.7)" stroke-width="1.2"/>
+      <line x1="60" y1="135" x2="28" y2="158" stroke="rgba(95,208,104,0.5)" stroke-width="0.8"/>
+      <line x1="60" y1="168" x2="22" y2="190" stroke="rgba(95,208,104,0.4)" stroke-width="0.8"/>
+      <line x1="60" y1="135" x2="92" y2="158" stroke="rgba(95,208,104,0.5)" stroke-width="0.8"/>
     </g>
-    <g style="animation:botanicalSway 12s ease-in-out infinite 2s;" transform-origin="30px 340px">
-      <ellipse cx="28" cy="320" rx="28" ry="85" fill="rgba(40,130,55,0.05)" stroke="rgba(95,208,104,0.07)" stroke-width="0.8" transform="rotate(-14,28,320)"/>
-      <line x1="28" y1="250" x2="28" y2="390" stroke="rgba(95,208,104,0.06)" stroke-width="1"/>
+    <g style="animation:botanicalSway 10s ease-in-out infinite 4s;" transform="translate(1440,0) scale(-1,1)">
+      <ellipse cx="60" cy="180" rx="38" ry="115" fill="rgba(58,158,69,0.5)" stroke="rgba(95,208,104,0.7)" stroke-width="1" transform="rotate(-22,60,180)"/>
+      <line x1="60" y1="80" x2="60" y2="270" stroke="rgba(95,208,104,0.6)" stroke-width="1.2"/>
+      <line x1="60" y1="120" x2="32" y2="142" stroke="rgba(95,208,104,0.5)" stroke-width="0.8"/>
+      <line x1="60" y1="150" x2="88" y2="170" stroke="rgba(95,208,104,0.5)" stroke-width="0.8"/>
     </g>
-    <!-- top-right mirror -->
-    <g style="animation:botanicalSway 10s ease-in-out infinite 4s;" transform="translate(1440,0) scale(-1,1)" transform-origin="60px 220px">
-      <ellipse cx="60" cy="180" rx="38" ry="115" fill="rgba(58,158,69,0.06)" stroke="rgba(95,208,104,0.08)" stroke-width="1" transform="rotate(-22,60,180)"/>
-      <line x1="60" y1="80" x2="60" y2="270" stroke="rgba(95,208,104,0.07)" stroke-width="1.2"/>
-      <line x1="60" y1="118" x2="32" y2="140" stroke="rgba(95,208,104,0.05)" stroke-width="0.8"/>
-      <line x1="60" y1="148" x2="28" y2="168" stroke="rgba(95,208,104,0.04)" stroke-width="0.8"/>
-      <line x1="60" y1="118" x2="88" y2="140" stroke="rgba(95,208,104,0.05)" stroke-width="0.8"/>
+    <g style="animation:botanicalSway 11s ease-in-out infinite 1s;" transform="translate(0,900) scale(1,-1)">
+      <ellipse cx="55" cy="145" rx="42" ry="120" fill="rgba(58,158,69,0.4)" stroke="rgba(95,208,104,0.6)" stroke-width="1" transform="rotate(-20,55,145)"/>
+      <line x1="55" y1="40" x2="55" y2="240" stroke="rgba(95,208,104,0.5)" stroke-width="1.2"/>
     </g>
-    <!-- bottom-left -->
-    <g style="animation:botanicalSway 11s ease-in-out infinite 1s;" transform="translate(0,900) scale(1,-1)" transform-origin="60px 160px">
-      <ellipse cx="55" cy="145" rx="42" ry="120" fill="rgba(58,158,69,0.05)" stroke="rgba(95,208,104,0.08)" stroke-width="1" transform="rotate(-20,55,145)"/>
-      <line x1="55" y1="40"  x2="55" y2="240" stroke="rgba(95,208,104,0.06)" stroke-width="1.2"/>
-      <line x1="55" y1="90"  x2="24" y2="112" stroke="rgba(95,208,104,0.04)" stroke-width="0.8"/>
-      <line x1="55" y1="120" x2="20" y2="140" stroke="rgba(95,208,104,0.04)" stroke-width="0.8"/>
-      <line x1="55" y1="90"  x2="86" y2="112" stroke="rgba(95,208,104,0.04)" stroke-width="0.8"/>
-    </g>
-    <!-- bottom-right -->
-    <g style="animation:botanicalSway 13s ease-in-out infinite 3s;" transform="translate(1440,900) scale(-1,-1)" transform-origin="60px 150px">
-      <ellipse cx="60" cy="140" rx="36" ry="105" fill="rgba(40,140,58,0.05)" stroke="rgba(95,208,104,0.07)" stroke-width="1" transform="rotate(-18,60,140)"/>
-      <line x1="60" y1="45" x2="60" y2="225" stroke="rgba(95,208,104,0.06)" stroke-width="1.2"/>
+    <g style="animation:botanicalSway 13s ease-in-out infinite 3s;" transform="translate(1440,900) scale(-1,-1)">
+      <ellipse cx="60" cy="140" rx="36" ry="105" fill="rgba(40,140,58,0.4)" stroke="rgba(95,208,104,0.6)" stroke-width="1" transform="rotate(-18,60,140)"/>
+      <line x1="60" y1="45" x2="60" y2="225" stroke="rgba(95,208,104,0.5)" stroke-width="1.2"/>
     </g>
   </svg>
-
-  <!-- ████  LAYER 8 : RIPPLE RINGS  ████ -->
-  <div style="position:absolute;width:220px;height:220px;border-radius:50%;
-    border:1px solid rgba(95,208,104,0.18);top:18%;left:6%;
-    animation:ripple 5s ease-out infinite;"></div>
-  <div style="position:absolute;width:220px;height:220px;border-radius:50%;
-    border:1px solid rgba(95,208,104,0.12);top:18%;left:6%;
-    animation:ripple 5s ease-out infinite 1.7s;"></div>
-  <div style="position:absolute;width:220px;height:220px;border-radius:50%;
-    border:1px solid rgba(95,208,104,0.07);top:18%;left:6%;
-    animation:ripple 5s ease-out infinite 3.4s;"></div>
-  <div style="position:absolute;width:180px;height:180px;border-radius:50%;
-    border:1px solid rgba(95,208,104,0.16);top:55%;right:8%;
-    animation:ripple 7s ease-out infinite 1s;"></div>
-  <div style="position:absolute;width:180px;height:180px;border-radius:50%;
-    border:1px solid rgba(95,208,104,0.10);top:55%;right:8%;
-    animation:ripple 7s ease-out infinite 3.5s;"></div>
-  <div style="position:absolute;width:150px;height:150px;border-radius:50%;
-    border:1px solid rgba(95,208,104,0.12);bottom:10%;left:40%;
-    animation:ripple 6s ease-out infinite 2s;"></div>
-  <div style="position:absolute;width:150px;height:150px;border-radius:50%;
-    border:1px solid rgba(95,208,104,0.07);bottom:10%;left:40%;
-    animation:ripple 6s ease-out infinite 4s;"></div>
-
-  <!-- ████  LAYER 9 : SHOOTING STARS  ████ -->
-  <div style="position:absolute;width:180px;height:1.5px;border-radius:2px;
-    background:linear-gradient(90deg,transparent,rgba(95,208,104,0.85),transparent);
-    top:12%;left:0;animation:shoot 7s linear infinite 0s;"></div>
-  <div style="position:absolute;width:110px;height:1px;border-radius:2px;
-    background:linear-gradient(90deg,transparent,rgba(95,208,104,0.65),transparent);
-    top:30%;left:0;animation:shoot 11s linear infinite 2s;"></div>
-  <div style="position:absolute;width:220px;height:1.5px;border-radius:2px;
-    background:linear-gradient(90deg,transparent,rgba(58,158,69,0.75),transparent);
-    top:52%;left:0;animation:shoot 9s linear infinite 5s;"></div>
-  <div style="position:absolute;width:140px;height:1px;border-radius:2px;
-    background:linear-gradient(90deg,transparent,rgba(95,208,104,0.55),transparent);
-    top:74%;left:0;animation:shoot 13s linear infinite 1s;"></div>
-  <div style="position:absolute;width:90px;height:1px;border-radius:2px;
-    background:linear-gradient(90deg,transparent,rgba(75,185,82,0.50),transparent);
-    top:88%;left:0;animation:shoot 16s linear infinite 8s;"></div>
-
-  <!-- ████  LAYER 10 : TWINKLING STAR DOTS  ████ -->
-  <div style="position:absolute;width:4px;height:4px;border-radius:50%;background:#5fd068;top:8%;left:18%;animation:twinkle 2.8s ease-in-out infinite 0s;"></div>
-  <div style="position:absolute;width:3px;height:3px;border-radius:50%;background:#5fd068;top:15%;left:72%;animation:twinkle 4.2s ease-in-out infinite 1s;"></div>
-  <div style="position:absolute;width:5px;height:5px;border-radius:50%;background:#3a9e45;top:28%;left:90%;animation:twinkle 3.5s ease-in-out infinite 0.5s;"></div>
-  <div style="position:absolute;width:3px;height:3px;border-radius:50%;background:#5fd068;top:42%;left:8%;animation:twinkle 2.2s ease-in-out infinite 2s;"></div>
-  <div style="position:absolute;width:4px;height:4px;border-radius:50%;background:#3a9e45;top:55%;left:55%;animation:twinkle 5.0s ease-in-out infinite 1.5s;"></div>
-  <div style="position:absolute;width:3px;height:3px;border-radius:50%;background:#5fd068;top:65%;left:30%;animation:twinkle 3.8s ease-in-out infinite 3s;"></div>
-  <div style="position:absolute;width:4px;height:4px;border-radius:50%;background:#5fd068;top:75%;left:78%;animation:twinkle 2.5s ease-in-out infinite 4s;"></div>
-  <div style="position:absolute;width:3px;height:3px;border-radius:50%;background:#3a9e45;top:85%;left:15%;animation:twinkle 4.5s ease-in-out infinite 0.8s;"></div>
-  <div style="position:absolute;width:5px;height:5px;border-radius:50%;background:#5fd068;top:90%;left:60%;animation:twinkle 3.2s ease-in-out infinite 2.5s;"></div>
-  <div style="position:absolute;width:3px;height:3px;border-radius:50%;background:#5fd068;top:35%;left:48%;animation:twinkle 4.8s ease-in-out infinite 1.2s;"></div>
-  <div style="position:absolute;width:4px;height:4px;border-radius:50%;background:#3a9e45;top:22%;left:35%;animation:twinkle 2.0s ease-in-out infinite 3.5s;"></div>
-
-  <!-- ████  LAYER 11 : FLOATING LEAF PARTICLES (15)  ████ -->
-  <span style="position:fixed;left: 2%;font-size:1.2rem;pointer-events:none;z-index:0;animation:leafFloat 13s linear infinite 0s,  leafSway 5s ease-in-out infinite 0s;">🍃</span>
-  <span style="position:fixed;left: 8%;font-size:0.7rem;pointer-events:none;z-index:0;animation:leafFloat 17s linear infinite 2s,  leafSway 7s ease-in-out infinite 1s;">🌿</span>
-  <span style="position:fixed;left:15%;font-size:1.0rem;pointer-events:none;z-index:0;animation:leafFloat 11s linear infinite 5s,  leafSway 6s ease-in-out infinite 2s;">🍃</span>
-  <span style="position:fixed;left:22%;font-size:0.6rem;pointer-events:none;z-index:0;animation:leafFloat 20s linear infinite 1s,  leafSway 9s ease-in-out infinite 3s;">🌱</span>
-  <span style="position:fixed;left:30%;font-size:1.1rem;pointer-events:none;z-index:0;animation:leafFloat 15s linear infinite 7s,  leafSway 5s ease-in-out infinite 1s;">🍃</span>
-  <span style="position:fixed;left:38%;font-size:0.75rem;pointer-events:none;z-index:0;animation:leafFloat 12s linear infinite 4s, leafSway 8s ease-in-out infinite 2s;">🌿</span>
-  <span style="position:fixed;left:46%;font-size:0.65rem;pointer-events:none;z-index:0;animation:leafFloat 19s linear infinite 9s, leafSway 6s ease-in-out infinite 4s;">🌱</span>
-  <span style="position:fixed;left:54%;font-size:1.3rem;pointer-events:none;z-index:0;animation:leafFloat 16s linear infinite 3s, leafSway 7s ease-in-out infinite 0s;">🍃</span>
-  <span style="position:fixed;left:61%;font-size:0.7rem;pointer-events:none;z-index:0;animation:leafFloat 14s linear infinite 6s, leafSway 5s ease-in-out infinite 3s;">🌿</span>
-  <span style="position:fixed;left:68%;font-size:0.9rem;pointer-events:none;z-index:0;animation:leafFloat 18s linear infinite 0s, leafSway 9s ease-in-out infinite 1s;">🍃</span>
-  <span style="position:fixed;left:75%;font-size:0.65rem;pointer-events:none;z-index:0;animation:leafFloat 10s linear infinite 8s, leafSway 6s ease-in-out infinite 2s;">🌱</span>
-  <span style="position:fixed;left:82%;font-size:1.0rem;pointer-events:none;z-index:0;animation:leafFloat 22s linear infinite 2s, leafSway 8s ease-in-out infinite 5s;">🌿</span>
-  <span style="position:fixed;left:88%;font-size:0.8rem;pointer-events:none;z-index:0;animation:leafFloat 16s linear infinite 11s,leafSway 7s ease-in-out infinite 0s;">🍃</span>
-  <span style="position:fixed;left:93%;font-size:0.7rem;pointer-events:none;z-index:0;animation:leafFloat 13s linear infinite 4s, leafSway 5s ease-in-out infinite 3s;">🌿</span>
-  <span style="position:fixed;left:98%;font-size:1.1rem;pointer-events:none;z-index:0;animation:leafFloat 21s linear infinite 7s, leafSway 9s ease-in-out infinite 1s;">🍃</span>
-
 </div>
 """, unsafe_allow_html=True)
+
+# JS canvas leaf animation via components (bypasses Streamlit script stripping)
+components.html("""
+<!DOCTYPE html>
+<html>
+<head>
+<style>*{margin:0;padding:0;}html,body{background:transparent;}</style>
+</head>
+<body>
+<script>
+/* ── Inject canvas into PARENT document (same-origin Streamlit) ── */
+const pDoc = window.parent.document;
+
+// Remove old canvas if re-running
+const old = pDoc.getElementById('leafCanvasGlobal');
+if(old) old.remove();
+
+const canvas = pDoc.createElement('canvas');
+canvas.id = 'leafCanvasGlobal';
+canvas.style.cssText = [
+  'position:fixed','inset:0','width:100vw','height:100vh',
+  'pointer-events:none','z-index:9999','top:0','left:0',
+].join(';');
+pDoc.body.appendChild(canvas);
+
+const ctx = canvas.getContext('2d');
+
+function resize(){
+  canvas.width  = window.parent.innerWidth  || window.screen.width;
+  canvas.height = window.parent.innerHeight || window.screen.height;
+}
+resize();
+window.parent.addEventListener('resize', resize);
+
+/* ─── Leaf colours ─── */
+const COLORS = [
+  [95,208,104],
+  [58,158,69],
+  [40,140,55],
+  [130,220,100],
+  [75,180,82],
+  [20,110,40],
+  [160,230,120],
+];
+
+/* ─── Draw a realistic leaf shape ─── */
+function drawLeaf(ctx, size, rgb, alpha){
+  const [r,g,b] = rgb;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  // leaf body
+  ctx.beginPath();
+  ctx.moveTo(0, -size);
+  ctx.bezierCurveTo( size*0.95, -size*0.3,  size*0.95,  size*0.3, 0,  size);
+  ctx.bezierCurveTo(-size*0.95,  size*0.3, -size*0.95, -size*0.3, 0, -size);
+  ctx.fillStyle   = `rgba(${r},${g},${b},${alpha})`;
+  ctx.strokeStyle = `rgba(${Math.min(r+30,255)},${Math.min(g+30,255)},${b},${alpha*0.5})`;
+  ctx.lineWidth   = 0.6;
+  ctx.fill();
+  ctx.stroke();
+
+  // midrib
+  ctx.beginPath();
+  ctx.moveTo(0,-size*0.9);
+  ctx.lineTo(0, size*0.9);
+  ctx.strokeStyle = `rgba(${Math.min(r+40,255)},${Math.min(g+40,255)},${b},${alpha*0.55})`;
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+
+  // veins
+  for(let i=1;i<=4;i++){
+    const t  = i/5;
+    const y  = -size*0.75 + size*1.5*t;
+    const vx = size * 0.65 * Math.sin(t*Math.PI);
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.quadraticCurveTo( vx*0.5, y-size*0.05,  vx, y-size*0.12);
+    ctx.moveTo(0, y);
+    ctx.quadraticCurveTo(-vx*0.5, y-size*0.05, -vx, y-size*0.12);
+    ctx.strokeStyle = `rgba(${Math.min(r+50,255)},${Math.min(g+50,255)},${b},${alpha*0.30})`;
+    ctx.lineWidth = 0.3;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/* ─── Ripple ─── */
+class Ripple {
+  constructor(x, y, size){
+    this.x     = x;
+    this.y     = y;
+    this.size  = size;
+    this.rings = [
+      {r: size*0.2, maxR: size*5.5, alpha:0.75, speed: size*0.22},
+      {r: size*0.2, maxR: size*4.5, alpha:0.55, speed: size*0.18},
+      {r: size*0.2, maxR: size*3.5, alpha:0.38, speed: size*0.14},
+    ];
+    // splash dots
+    this.dots = Array.from({length:8}, (_,i)=>{
+      const ang = (i/8)*Math.PI*2;
+      return {
+        ang,
+        dist: 0,
+        maxDist: size*(1.8+Math.random()),
+        alpha: 0.85,
+        speed: size*0.08 + Math.random()*size*0.06,
+      };
+    });
+    this.done = false;
+  }
+  update(){
+    let alive = false;
+    for(const ring of this.rings){
+      ring.r     += ring.speed;
+      ring.alpha -= 0.013;
+      if(ring.alpha > 0) alive = true;
+    }
+    for(const d of this.dots){
+      if(d.dist < d.maxDist){
+        d.dist  += d.speed;
+        d.alpha -= 0.022;
+        alive = true;
+      }
+    }
+    if(!alive) this.done = true;
+  }
+  draw(){
+    // elliptical rings (flat perspective)
+    for(const ring of this.rings){
+      if(ring.alpha <= 0) continue;
+      ctx.beginPath();
+      ctx.ellipse(this.x, this.y, ring.r, ring.r*0.28, 0, 0, Math.PI*2);
+      ctx.strokeStyle = `rgba(95,208,104,${ring.alpha.toFixed(3)})`;
+      ctx.lineWidth   = 1.4;
+      ctx.stroke();
+    }
+    // splash particles
+    for(const d of this.dots){
+      if(d.alpha <= 0 || d.dist >= d.maxDist) continue;
+      const px = this.x + Math.cos(d.ang)*d.dist;
+      const py = this.y + Math.sin(d.ang)*d.dist*0.28;
+      ctx.beginPath();
+      ctx.arc(px, py, 2.2, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(95,208,104,${d.alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+  }
+}
+
+/* ─── Leaf ─── */
+class Leaf {
+  constructor(randomY){
+    this.rgb     = COLORS[Math.floor(Math.random()*COLORS.length)];
+    this.size    = 7 + Math.random()*12;
+    this.x       = Math.random()*canvas.width;
+    this.y       = randomY ? Math.random()*canvas.height : -this.size*2;
+    this.rot     = Math.random()*Math.PI*2;
+    this.rotSpd  = (Math.random()-0.5)*0.030;
+    this.vy      = 0.45 + Math.random()*1.1;
+    this.vx      = (Math.random()-0.5)*0.55;
+    this.swayAmp = 22 + Math.random()*30;
+    this.swayFq  = 0.007 + Math.random()*0.011;
+    this.swayOff = Math.random()*Math.PI*2;
+    this.alpha   = 0.18 + Math.random()*0.55;
+    this.t       = Math.random()*1000;
+    this.landed  = false;
+    this.landRot = 0;
+    this.fadeAlpha = 0;
+    this.fadeSpd = 0.003 + Math.random()*0.004;
+  }
+  reset(){
+    this.x       = Math.random()*canvas.width;
+    this.y       = -this.size*2;
+    this.rot     = Math.random()*Math.PI*2;
+    this.rotSpd  = (Math.random()-0.5)*0.030;
+    this.vy      = 0.45 + Math.random()*1.1;
+    this.vx      = (Math.random()-0.5)*0.55;
+    this.swayAmp = 22 + Math.random()*30;
+    this.swayFq  = 0.007 + Math.random()*0.011;
+    this.swayOff = Math.random()*Math.PI*2;
+    this.alpha   = 0.18 + Math.random()*0.55;
+    this.t       = 0;
+    this.landed  = false;
+  }
+  update(){
+    if(this.landed){
+      this.fadeAlpha -= this.fadeSpd;
+      if(this.fadeAlpha <= 0) this.reset();
+      return;
+    }
+    this.t  += 1;
+    this.x  += this.vx + Math.sin(this.t*this.swayFq + this.swayOff)*0.8;
+    this.y  += this.vy;
+    this.rot += this.rotSpd + Math.sin(this.t*this.swayFq)*0.008;
+
+    if(this.y > canvas.height + this.size){
+      this.landed    = true;
+      this.fadeAlpha = this.alpha;
+      this.landRot   = this.rot;
+      this.y         = canvas.height - this.size*0.3;
+      ripples.push(new Ripple(this.x, this.y, this.size));
+    }
+  }
+  draw(){
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    if(!this.landed){
+      const tilt = Math.sin(this.t*this.swayFq + this.swayOff)*0.35;
+      ctx.rotate(this.rot + tilt);
+      drawLeaf(ctx, this.size, this.rgb, this.alpha);
+    } else {
+      // lies flat on ground
+      ctx.rotate(this.landRot);
+      ctx.scale(1, 0.28);
+      drawLeaf(ctx, this.size, this.rgb, this.fadeAlpha);
+    }
+    ctx.restore();
+  }
+}
+
+/* ─── Init ─── */
+const ripples = [];
+const LEAF_COUNT = 42;
+const leaves = Array.from({length:LEAF_COUNT}, () => new Leaf(true));
+
+/* ─── Loop ─── */
+function loop(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // ripples
+  for(let i=ripples.length-1; i>=0; i--){
+    ripples[i].update();
+    ripples[i].draw();
+    if(ripples[i].done) ripples.splice(i,1);
+  }
+
+  // leaves
+  for(const leaf of leaves){
+    leaf.update();
+    leaf.draw();
+  }
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
+""", height=1, scrolling=False)
 # ----------- HEADER -----------
 st.markdown("""
 <div class="hero-header">
@@ -999,6 +1113,6 @@ elif option == "🎥  Live Detection":
 # ----------- FOOTER -----------
 st.markdown("""
 <div class="footer">
-    🌿 &nbsp; Plant AI &nbsp;·&nbsp; Powered by Deep Learning &nbsp;·&nbsp; Built with Streamlit
+    🌿 &nbsp; Plant AI &nbsp;·&nbsp; Powered by Deep Learning &nbsp;·&nbsp; Made by 49,50,51
 </div>
 """, unsafe_allow_html=True)
